@@ -22,7 +22,7 @@ var site = {
 
         $('input[type=submit').bind('click', function(event){
             event.preventDefault();
-            $('input').validate(function(err){
+            $('form').validate(function(err){
                 console.log(err);
             });
         });

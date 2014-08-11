@@ -1,6 +1,7 @@
 (function($) {
     $.fn.validate = function(settings, callback) {
         var $this = this,
+            $inputs = $('input, select, textarea', $this),
             defaults = {
                 eclass : 'error'
             },
@@ -53,41 +54,40 @@
                 valid = true,
                 error = '';
 
+            console.log(groupname);
+
             switch (type) {
                 case 'radio':
                 case 'checkbox':
 
                     if(name === groupname) {
+                        console.log('same');
                         delete errors[name];
                         break;
                     }
 
-                    if (isChecked($el)) {
+                    if(isChecked($el)) {
                         groupname = name;
                     } else {
                         error += 'required';
-                        valid = false;
                     }
 
                     break;
                     return
 
                 case 'textarea':
-                    if (val === '') {
+                    if(val === '') {
                         error += 'required';
-                        valid = false;
                     }
                     break;
 
                 case 'email':
-                    if (val === '') {
+                    if(val === '') {
                         error += 'required';
-                        valid = false;
                     }
 
-                    if (!isEmail(val)) {
+                    if(!isEmail(val)) {
                         error += 'invalid';
-                        valid = false;
                     }
                     break;
 
@@ -97,25 +97,24 @@
                     break;
 
                 default:
-                    if (val === '') {
+                    if(val === '') {
                         error += 'required';
-                        valid = false;
                     }
                     break;
             }
 
             if(error.length){
                 errors[name] = error;
+                valid = false;
             }
 
             callback(valid);
         }
 
-        // Loop the items
-        $this.each(function(key){
+        $inputs.each(function(key){
             var $el = $(this);
+
             validateField($el, function(valid){
-                console.log(valid);
                 if(!valid){
                     $el.addClass(defaults.eclass);
                 }
