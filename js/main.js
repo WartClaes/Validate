@@ -19,6 +19,13 @@ var site = {
 	},
 	init: function(settings){
 		$.extend(this.settings, settings);
+
+        $('input[type=submit').bind('click', function(event){
+            event.preventDefault();
+            $('input').validate(function(err){
+                console.log(err);
+            });
+        });
 	}
 };
 

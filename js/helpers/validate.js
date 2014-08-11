@@ -1,11 +1,17 @@
 (function($) {
-    $.fn.validate = function(settings) {
+    $.fn.validate = function(settings, callback) {
         var $this = this,
             defaults = {
                 eclass : 'error'
             },
             groupname = false,
             errors = {};
+
+        // Check if setting could be callback
+        if(typeof settings === 'function') {
+            callback = settings;
+            settings = {};
+        }
 
         $.extend(defaults, settings);
 
@@ -40,23 +46,27 @@
         // Radio, checkbox, textarea, submit, text, email, number, hidden, select
 
         // Check for required attribute
-        function validateField($el){
+        function validateField($el, callback){
             var type = getType($el),
                 name = $el.attr('name'),
-                val = $el.val();
+                val = $el.val(),
+                valid = true,
+                error = '';
 
             switch (type) {
                 case 'radio':
                 case 'checkbox':
 
                     if(name === groupname) {
+                        delete errors[name];
                         break;
                     }
 
                     if (isChecked($el)) {
                         groupname = name;
                     } else {
-                        errors[name] = inputtype;
+                        error += 'required';
+                        valid = false;
                     }
 
                     break;
@@ -64,7 +74,20 @@
 
                 case 'textarea':
                     if (val === '') {
-                        errorlist[name] = inputtype;
+                        error += 'required';
+                        valid = false;
+                    }
+                    break;
+
+                case 'email':
+                    if (val === '') {
+                        error += 'required';
+                        valid = false;
+                    }
+
+                    if (!isEmail(val)) {
+                        error += 'invalid';
+                        valid = false;
                     }
                     break;
 
@@ -75,95 +98,32 @@
 
                 default:
                     if (val === '') {
-                        errors[name] = inputtype;
+                        error += 'required';
+                        valid = false;
                     }
                     break;
             }
+
+            if(error.length){
+                errors[name] = error;
+            }
+
+            callback(valid);
         }
 
         // Loop the items
         $this.each(function(key){
-            validateField($(this);
+            var $el = $(this);
+            validateField($el, function(valid){
+                console.log(valid);
+                if(!valid){
+                    $el.addClass(defaults.eclass);
+                }
+            });
         });
+
+        if(typeof callback !== 'undefined'){
+            callback(errors);
+        }
     };
 }(jQuery));
-
-/*
-
-
-
-$(".steps.active input, .steps.active textarea").each(function(key){
-
-    switch (inputtype) {
-        case 'radio':
-
-            if($(this).attr('name') == inputwrap) {
-                break;
-            }
-
-            if ($(this).is(":checked")) {
-               valid = true;
-               inputwrap = $(this).attr('name');
-               errorlist = {};
-            } else {
-                valid = false;
-                errorlist[name] = inputtype;
-            }                        
-            break;
-
-        case 'submit':
-            return;
-            break;
-
-        case 'checkbox':
-            return;
-            break;
-
-        case 'hidden':
-            return;
-            break;                            
-        
-        case 'textarea':
-            if ($(this).val() == "") {
-                valid = false;
-                errorlist[name] = inputtype;
-                                              
-            } else {
-                valid = true;
-            }  
-            break;
-
-        default:
-            if ($(this).val() !== "" || $(this).attr('data-slider-value') !== "") {
-                valid = true;
-            } else {
-                valid = false;
-            }                          
-            break;
-    }
-
-});
-
-$('p.error').remove();
-
-//  if {valid} is true continue
-if(valid && $.isEmptyObject(errorlist)){
-                       
-    if ( $(".steps").last().hasClass("active") ) {
-        $('.grid-container.survey form').submit();
-    }else {
-        currentstep.removeClass('active').fadeOut();
-        currentstep.next().addClass('active').fadeIn();
-    }                 
-
-} else {   
-    $.each(errorlist, function(name, type){
-        if ( type == 'textarea') { 
-            $('[name="'+name+'"]').parents('.textareawrap').append("<p class='error'>" + required_field + "</p>");
-
-        } else {
-            currentstep.append("<p class='error'>" + required_field + "</p>");
-        }                            
-    });
-
-}

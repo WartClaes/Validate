@@ -1,0 +1,80 @@
+
+/*
+
+
+
+$(".steps.active input, .steps.active textarea").each(function(key){
+
+    switch (inputtype) {
+        case 'radio':
+
+            if($(this).attr('name') == inputwrap) {
+                break;
+            }
+
+            if ($(this).is(":checked")) {
+               valid = true;
+               inputwrap = $(this).attr('name');
+               errorlist = {};
+            } else {
+                valid = false;
+                errorlist[name] = inputtype;
+            }
+            break;
+
+        case 'submit':
+            return;
+            break;
+
+        case 'checkbox':
+            return;
+            break;
+
+        case 'hidden':
+            return;
+            break;
+
+        case 'textarea':
+            if ($(this).val() == "") {
+                valid = false;
+                errorlist[name] = inputtype;
+
+            } else {
+                valid = true;
+            }
+            break;
+
+        default:
+            if ($(this).val() !== "" || $(this).attr('data-slider-value') !== "") {
+                valid = true;
+            } else {
+                valid = false;
+            }
+            break;
+    }
+
+});
+
+$('p.error').remove();
+
+//  if {valid} is true continue
+if(valid && $.isEmptyObject(errorlist)){
+
+    if ( $(".steps").last().hasClass("active") ) {
+        $('.grid-container.survey form').submit();
+    }else {
+        currentstep.removeClass('active').fadeOut();
+        currentstep.next().addClass('active').fadeIn();
+    }
+
+} else {
+    $.each(errorlist, function(name, type){
+        if ( type == 'textarea') {
+            $('[name="'+name+'"]').parents('.textareawrap').append("<p class='error'>" + required_field + "</p>");
+
+        } else {
+            currentstep.append("<p class='error'>" + required_field + "</p>");
+        }
+    });
+
+}
