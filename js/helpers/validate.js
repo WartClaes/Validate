@@ -3,7 +3,8 @@
         var $this = this,
             $inputs = $('input, select, textarea', $this),
             defaults = {
-                eclass : 'error'
+                eclass : 'error',
+                wrapper : '.input-wrapper'
             },
             groupname = false,
             errors = {};
@@ -41,6 +42,19 @@
 
         function isRequired($el) {
             // Check for required attribute
+            if($el.attr('required') || _parent($el).hasClass('required')){
+                return true;
+            }
+
+            return false;
+        }
+
+        function _parent($el){
+            if($el.parent(defaults.wrapper).length){
+                return $el.parent(defaults.wrapper);
+            }
+
+            return $el;
         }
 
         // The switch case so we can check each specific type
@@ -52,22 +66,19 @@
                 name = $el.attr('name'),
                 val = $el.val(),
                 valid = true,
-                error = '';
-
-            console.log(groupname);
+                error = [];
 
             switch (type) {
                 case 'radio':
                 case 'checkbox':
 
                     if(name === groupname) {
-                        console.log('same');
-                        delete errors[name];
                         break;
                     }
 
                     if(isChecked($el)) {
                         groupname = name;
+                        delete errors[name];
                     } else {
                         error += 'required';
                     }
@@ -82,7 +93,7 @@
                     break;
 
                 case 'email':
-                    if(val === '') {
+                    if(isRequired($el) && val === '') {
                         error += 'required';
                     }
 
@@ -97,7 +108,7 @@
                     break;
 
                 default:
-                    if(val === '') {
+                    if(isRequired($el) && val === '') {
                         error += 'required';
                     }
                     break;
@@ -116,7 +127,7 @@
 
             validateField($el, function(valid){
                 if(!valid){
-                    $el.addClass(defaults.eclass);
+                    _parent($el).addClass(defaults.eclass);
                 }
             });
         });
