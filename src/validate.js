@@ -24,6 +24,10 @@
                 t = 'textarea';
             }
 
+            if($el.is('select')){
+                t = 'select';
+            }
+
             return t;
         }
 
@@ -87,6 +91,7 @@
                     return
 
                 case 'textarea':
+                case 'select':
                     if(val === '') {
                         error += 'required';
                     }
