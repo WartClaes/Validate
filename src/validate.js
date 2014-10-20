@@ -1,15 +1,22 @@
+/**
+ * Todo:
+ * - Overrule default 'type' attribute
+ * - 
+ */
+
 (function($) {
     $.fn.validate = function(settings, callback) {
         var $this = this,
             $inputs = $('input, select, textarea', $this),
             defaults = {
                 eclass : 'error',
-                wrapper : '.input-wrapper'
+                wrapper : '',
+                addClass : true
             },
             groupname = false,
             errors = {};
 
-        // Check if setting could be callback
+        // Check if settings could be callback
         if(typeof settings === 'function') {
             callback = settings;
             settings = {};
@@ -62,7 +69,15 @@
         }
 
         // The switch case so we can check each specific type
-        // Radio, checkbox, textarea, submit, text, email, number, hidden, select
+        // + Radio
+        // + checkbox
+        // + textarea
+        // + submit
+        // - text
+        // + email
+        // - number
+        // + hidden
+        // - select
 
         // Check for required attribute
         function validateField($el, callback){
@@ -131,7 +146,7 @@
             var $el = $(this);
 
             validateField($el, function(valid){
-                if(!valid){
+                if(!valid && defaults.addClass){
                     _parent($el).addClass(defaults.eclass);
                 }
             });
