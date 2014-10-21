@@ -23,7 +23,7 @@ gulp.task('uglify', function () {
         .pipe($.plumber())
         .pipe($.uglify())
         .pipe($.rename({
-            suffix: "-min",
+            suffix: ".min",
         }))
         .pipe(gulp.dest(config.dist));
 });
